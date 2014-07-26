@@ -31,6 +31,7 @@ testdata<-cbind(xtestdata, ytestdata, subjecttest)
 #merge test and train data
 mergeddata<-rbind(testdata, traindata)
 
+#changes the number of the activity to the actual activity
 for (i in 1:nrow(mergeddata)) {
     if (mergeddata[i, "activity"]==1){
         mergeddata[i, "activity"]<-"WALKING"
@@ -58,11 +59,15 @@ meanstdcols<-grepl(".*(mean\\(\\)|std\\(\\)|activity|subject).*", colnames(merge
 #Data of only means and standard deviations
 meanstddata<-mergeddata[, meanstdcols]
 
+#Provides only the measurements of means and standard deviations
 meandatacols<-grepl(".*(mean\\(\\)|activity|subject).*", colnames(meanstddata))
 meandata<-meanstddata[,meandatacols]
 
+
+#Transforms the data into the averages of each measurement for each activity and each subject
 library(reshape2)
 melteddata<-melt(meandata, id.vars=c("activity", "subject"))
-
 data<-dcast(melteddata, subject + activity ~ variable, mean)
 
+#Creates the file tidydata.txt with the new data
+write.table(data, "tidydata.txt")
